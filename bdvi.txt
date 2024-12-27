@@ -1,0 +1,62 @@
+CREATE VIEW v_pelanggan_aktif AS
+SELECT 
+    pelanggan.id_pelanggan AS ID_Pelanggan,
+    pelanggan.nama AS Nama_Pelanggan,
+    SUM(pemesanan.total_harga) AS Total_Pesanan
+FROM 
+    uas_bd2_13020230319_muhfatwah.pelanggan
+JOIN 
+    uas_bd2_13020230319_muhfatwah.pemesanan
+ON 
+    pelanggan.id_pelanggan = pemesanan.id_pelanggan
+GROUP BY 
+    pelanggan.id_pelanggan, pelanggan.nama;
+
+DELIMITER $$
+
+CREATE TRIGGER set_status_tiket_pending
+BEFORE INSERT ON uas_bd2_13020230319_muhfatwah.tiket
+FOR EACH ROW
+BEGIN
+    SET NEW.status = 'pending';
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE FUNCTION get_total_harga_pesanan(id_pemesanan INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+    SELECT 
+        total_harga
+    INTO 
+        total
+    FROM 
+        uas_bd2_13020230319_muhfatwah.pemesanan
+    WHERE 
+        id_pemesanan = id_pemesanan;
+    RETURN total;
+END$$
+
+DELIMITER ;
+
+SELECT 
+    pelanggan.nama AS Nama_Pelanggan,
+    festival.nama_festival AS Nama_Festival
+FROM 
+    uas_bd2_13020230319_muhfatwah.pelanggan
+JOIN 
+    uas_bd2_13020230319_muhfatwah.pemesanan
+ON 
+    pelanggan.id_pelanggan = pemesanan.id_pelanggan
+JOIN 
+    uas_bd2_13020230319_muhfatwah.detail_pemesanan
+ON 
+    pemesanan.id_pemesanan = detail_pemesanan.id_pemesanan
+JOIN 
+    uas_bd2_13020230319_muhfatwah.festival
+ON 
+    detail_pemesanan.id_tiket = festival.id_festival;

@@ -1,0 +1,82 @@
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE employees
+SET salary = salary * 1.10
+WHERE position = 'Developer';
+
+SET SQL_SAFE_UPDATES = 1; -- Aktifkan kembali safe update mode jika diperlukan
+
+ALTER TABLE departments
+DROP FOREIGN KEY departments_ibfk_1;
+
+ALTER TABLE departments
+ADD CONSTRAINT fk_manager_id
+FOREIGN KEY (manager_id) REFERENCES employees(emp_id)
+ON DELETE CASCADE;
+
+DELETE FROM employees
+WHERE emp_id = 2;
+
+ALTER TABLE departments
+DROP FOREIGN KEY departments_ibfk_1;
+
+ALTER TABLE departments
+ADD CONSTRAINT fk_manager_id
+FOREIGN KEY (manager_id) REFERENCES employees(emp_id)
+ON DELETE CASCADE;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_bonus(salary DECIMAL, position VARCHAR(50)) 
+RETURNS DECIMAL
+DETERMINISTIC
+BEGIN
+    DECLARE bonus DECIMAL;
+
+    IF position = 'Manager' THEN
+        SET bonus = salary * 0.20;
+    ELSEIF position = 'Developer' THEN
+        SET bonus = salary * 0.10;
+    ELSE
+        SET bonus = salary * 0.05;
+    END IF;
+
+    RETURN bonus;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE get_employee_details(IN emp_id INT)
+BEGIN
+    SELECT emp_name, position, salary, hire_date
+    FROM employees
+    WHERE emp_id = emp_id;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_employee
+BEFORE INSERT ON employees
+FOR EACH ROW
+BEGIN
+    SET NEW.bonus = calculate_bonus(NEW.salary, NEW.position);
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_salary
+BEFORE UPDATE ON employees
+FOR EACH ROW
+BEGIN
+    IF NEW.salary < 3000 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Gaji tidak boleh lebih rendah dari 3000';
+    END IF;
+END $$
+
+DELIMITER ;

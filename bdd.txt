@@ -1,0 +1,48 @@
+SELECT m.nama AS nama_mahasiswa, mk.nama_mata_kuliah
+FROM mahasiswa m
+JOIN mahasiswa_mata_kuliah mmk ON m.id_mahasiswa = mmk.id_mahasiswa
+JOIN mata_kuliah mk ON mmk.id_mata_kuliah = mk.id_mata_kuliah
+WHERE mk.id_mata_kuliah = ?  -- Ganti '?' dengan ID mata kuliah yang diinginkan
+ORDER BY m.nama;
+
+SELECT m.Nama AS nama_mahasiswa, mk.NamaMatKul AS nama_mata_kuliah
+FROM mahasiswa m
+LEFT JOIN pendaftaran p ON m.Nim = p.Nim
+LEFT JOIN matakuliah mk ON p.kd_matkul = mk.Kd_Matkul
+ORDER BY m.Jurusan;
+
+SELECT m.Nama AS nama_mahasiswa, mk.NamaMatKul AS nama_mata_kuliah
+FROM matakuliah mk
+LEFT JOIN pendaftaran p ON mk.Kd_Matkul = p.kd_matkul
+LEFT JOIN mahasiswa m ON p.Nim = m.Nim
+ORDER BY mk.NamaMatKul;
+
+SELECT m.Nama AS nama_mahasiswa, mk.NamaMatKul AS nama_mata_kuliah
+FROM mahasiswa m
+JOIN pendaftaran p ON m.Nim = p.Nim
+JOIN matakuliah mk ON p.kd_matkul = mk.Kd_Matkul
+WHERE p.Year = 2023
+ORDER BY m.Umur ASC;
+
+SELECT m.Nama AS nama_mahasiswa, mk.NamaMatKul AS nama_mata_kuliah
+FROM mahasiswa m
+LEFT JOIN pendaftaran p ON m.Nim = p.Nim
+LEFT JOIN matakuliah mk ON p.kd_matkul = mk.Kd_Matkul
+WHERE m.Umur > 20
+ORDER BY m.Nama DESC;
+
+SELECT m.Nama AS nama_mahasiswa, mk.NamaMatKul AS nama_mata_kuliah, p.Year AS tahun_pengambilan
+FROM mahasiswa m
+JOIN pendaftaran p ON m.Nim = p.Nim
+JOIN matakuliah mk ON p.kd_matkul = mk.Kd_Matkul
+WHERE p.Year = 2023
+ORDER BY mk.NamaMatKul ASC;
+
+SELECT m.Nama AS nama_mahasiswa, mk.NamaMatKul AS nama_mata_kuliah
+FROM mahasiswa m
+JOIN pendaftaran p ON m.Nim = p.Nim
+JOIN matakuliah mk ON p.kd_matkul = mk.Kd_Matkul
+WHERE mk.Kd_Matkul > 102
+ORDER BY m.Nama ASC;
+
+
